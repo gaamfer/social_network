@@ -1,0 +1,33 @@
+services:
+  my-postgres:
+    image: postgres:16
+    container_name: postgres-db
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+  
+  web:
+    build: .
+    container_name: social_network-c1
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_ENV=${DJANGO_ENV}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+    depends_on:
+      - my-postgres
+
+# Volumes section must be at the same level as services
+volumes:
+  pg-data:

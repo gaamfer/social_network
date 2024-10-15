@@ -1,4 +1,4 @@
-name: Build and share Docker Image to Docker Hub
+name: CI/CD Pipeline
 
 on:
   push:
@@ -26,5 +26,5 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:latest
+                push: true
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:latest

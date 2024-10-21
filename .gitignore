@@ -3,3 +3,4 @@ venv/
 .dockerignore
 network/__pycache__/*
 social_network/__pycache__/*
+network/migrations/*

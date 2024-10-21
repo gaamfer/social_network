@@ -5,17 +5,40 @@ from django.db import models
 class User(AbstractUser):
     pass
 
+class Profile(models.Model):
+    SEX_CHOICES = [('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=36, unique=True)
+    bio = models.TextField(max_length=280)
+    profile_pic = models.ImageField(upload_to='profile_pics/')
+    birth_date = models.DateField()
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES)
+    following = models.ManyToManyField("self", symmetrical=False, related_name='followers')
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "bio": self.bio,
+            "profile_pic": self.profile_pic.url,
+            "birth_date": self.birth_date,
+            "sex": self.get_sex_display(),  # Display the human-readable version of 'sex'
+            "followers": self.followers.count(),
+            "following": self.following.count()
+        }
+
 
 class Post(models.Model):
-    creator = models.Foreignkey("Profile", on_delete=models.CASCADE, related_name="post")#the user who creates the post
-    post_nb = models.Foreignkey("Profile", on_delete=models.CASCADE, related_name="post_id")# the id of the post related to the user, aside from the id
+    creator = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="post")#the user who creates the post
+    post_nb = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="post_id")# the id of the post related to the user, aside from the id
     message = models.TextField(max_length=280) # a message with 280 characters
     tag = models.ManyToManyField("Tag", related_name='posts')# the hastags
     ping_users = models.ManyToManyField("Profile", related_name='Pinged_posts')#ping @people , users 
     timestsamp = models.DateTimeField(auto_now_add=True)# the date and time it was posted once button clicked
     is_reported = models.ManyToManyField("Profile", related_name='reports')
-    is_deleted = models.ForeignKey("Profile", related_name='deleted_post')
-    is_archived = models.ForeignKey("Profile", related_name='archived_post')
+    is_deleted = models.ForeignKey("Profile", on_delete=models.CASCADE ,related_name='deleted_post')
+    is_archived = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name='archived_post')
     is_edited = models.ManyToManyField("Edit", related_name='edited_post')
     repost_source = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, related_name='reposts')
     
@@ -40,10 +63,10 @@ class Post(models.Model):
         }
 
 class SavedPost(models.Model):
-    user = models.Foreignkey("Profile", on_delete=models.CASCADE, related_name="saved_post")#the user who saves the post
+    user = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="saved_post")#the user who saves the post
     timestamp = models.DateTimeField(auto_now_add=True)# the date and time it was saved once button clicked
     is_saved = models.BooleanField(default=False)# the post is saved
-    post = models.Foreignkey("Post", on_delete=models.CASCADE, related_name="post")# the post that is saved
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="post")# the post that is saved
 
 
 class Edit(models.Model):
@@ -64,29 +87,6 @@ class PostImages(models.Model):
     image_ref = models.IntegerField(default=0)
     
 
-class Profile(models.Model):
-    SEX_CHOICES = [('M', 'Male'), ('F','Female'), ('O', 'Other')]
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=36, unique=True)
-    bio = models.TextField(max_length=280)
-    profile_pic = models.ImageField(upload_to='profile_pics/')
-    birth_date = models.DateField()
-    sex = models.ChoicesField(max_length=1, choices=SEX_CHOICES)
-    followers = models.ManyToManyField("self", related_name='following')
-    following = models.ManyToManyField("self", related_name='followers')
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "username": self.username,
-            "bio": self.bio,
-            "profile_pic": self.profile_pic.url,
-            "birth_date": self.birth_date,
-            "sex": self.sex,
-            "followers": self.followers.count(),
-            "following": self.following.count()
-        }
 
 
 class Comment(models.Model):

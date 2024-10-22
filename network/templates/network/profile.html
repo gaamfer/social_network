@@ -1,0 +1,21 @@
+{% extends "network/layout.html" %}
+
+{% block title %} {{request.user.username}} {% endblock %}
+
+{% block body %}
+
+    <div id ="Profile">
+    </div>
+
+    <button class="btn btn-sm btn-outline-primary" id="All">All</button>
+    <button class="btn btn-sm btn-outline-primary" id="MyComments">Mycomments</button>
+    <button class="btn btn-sm btn-outline-primary" id="Reposts">Reposts</button>
+    <button class="btn btn-sm btn-outline-primary" id="Saved">Saved</button>
+
+    <div id="my-timeline">
+    </div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'network/profile.js' %}"></script>
+{% endblock %} 

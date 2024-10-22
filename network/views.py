@@ -17,8 +17,19 @@ def index(request):
     else:
         return HttpResponseRedirect(reverse("network:login"))
 
-
+@csrf_exempt
+@login_required
 def generate_post(request):
+    #Composing a new post in the social media must be with a POST request
+    if request.method != "POST":
+        return JsonResponse({"error:" "POST request required."}, status=400)
+    
+    # Get content of the post
+    data = json.loads(request.body)
+    
+    message = data.get("message", "")
+    
+    
     ...
 
 def post(request, post_id):
@@ -28,7 +39,7 @@ def profile(request, username):
     ...
 
 def homepage(request, username):
-    ...
+    ... 
 
 
 

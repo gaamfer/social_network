@@ -38,10 +38,6 @@ def post(request, post_id):
 def profile(request, username):
     ...
 
-def homepage(request, username):
-    ... 
-
-
 
 def login_view(request):
     if request.method == "POST":

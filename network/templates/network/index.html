@@ -1,15 +1,22 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block title %}Feed{% endblock%}
 
 {% block body %}
 
+    <button class="btn btn-sm btn-outline-primary" id="ForYou">For You</button>
+    <button class="btn btn-sm btn-outline-primary" id="Following">Following</button>
+
     <div id ="homepage">
-        <button class="btn btn-sm btn-outline-primary" id="4You">For You</button>
-        <button class="btn btn-sm btn-outline-primary" id="Following">Following</button>
+    </div>
+
+    <div id="air-btns">
+        <button class="btn btn-sm btn-outline-primary" id="compose-btn">+</button>
     </div>
 
     <div id="compose-post">
+        <hr>
         <h3>What comes to your mind?</h3>
         <form id="compose-post-form">
             <div class="primary-buttons">
@@ -30,5 +37,5 @@
 {% endblock %}
 
 {% block script %}
-<script src="{% static 'network/main.js' %}"></script>
+    <script src="{% static 'network/main.js' %}"></script>
 {% endblock %}

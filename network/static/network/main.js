@@ -5,13 +5,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.querySelector('#ForYou').addEventListener('click', () => Feed_loader('ForYou'));
     document.querySelector('#Following').addEventListener('click', () => Feed_loader('Following'));
     document.querySelector('#compose-btn').addEventListener('click', () => Compose_post());
-    
-    // from layout.js
-    //document.querySelector('#profile').addEventListener('click', () => Load_Profile());
     document.querySelector('#Following').addEventListener('click', () => Followers());
-    
-    // Hide search Area
-    document.querySelector('#search-area-button').addEventListener('click', () => Search());
 
     Feed_loader('Following');
 
@@ -62,10 +56,3 @@ function Search(){
     document.querySelector('#search-area-left').addEventListener('click', () => HideSearchArea());
 
 };
-
-function HideSearchArea(){
-    // Hide search-area
-    document.querySelector('#search-area-button').style.display = 'block';
-    document.querySelector('#search-area').style.display = 'none';
-
-}

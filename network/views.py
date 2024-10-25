@@ -36,6 +36,10 @@ def post(request, post_id):
     ...
 
 def profile(request, username):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+    return render(request, "network/profile.html", {"username": username})
     ...
 
 

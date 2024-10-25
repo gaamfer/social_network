@@ -1,5 +1,7 @@
 {% extends "network/layout.html" %}
 
+{% load static %}
+
 {% block title %} {{request.user.username}} {% endblock %}
 
 {% block body %}
@@ -12,10 +14,11 @@
     <button class="btn btn-sm btn-outline-primary" id="Reposts">Reposts</button>
     <button class="btn btn-sm btn-outline-primary" id="Saved">Saved</button>
 
-    <div id="my-timeline">
+    <div id="my-content">
     </div>
 {% endblock %}
 
 {% block script %}
+<script src="{% static 'network/search.js' %}"></script>
 <script src="{% static 'network/profile.js' %}"></script>
 {% endblock %} 

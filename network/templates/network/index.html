@@ -3,37 +3,48 @@
 
 {% block title %}Feed{% endblock%}
 
+{% block style %}
+<link href="{% static 'network/styles.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
-
-    <button class="btn btn-sm btn-outline-primary" id="ForYou">For You</button>
-    <button class="btn btn-sm btn-outline-primary" id="Following">Following</button>
-
-    <div id ="homepage">
+<div class="container">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex justify-content-center w-100">
+            <div>
+                <button class="btn btn-sm btn-outline-primary" id="ForYou">For You</button>
+                <button class="btn btn-sm btn-outline-primary" id="Following">Following</button>
+            </div>
+        </div>
+        <div id="air-btns">
+            <button class="btn btn-sm btn-outline-primary" id="compose-btn">+</button>
+        </div>
     </div>
+    
+    <div id="feed">
+        <div id ="homepage">
+        </div>
 
-    <div id="air-btns">
-        <button class="btn btn-sm btn-outline-primary" id="compose-btn">+</button>
-    </div>
 
-    <div id="compose-post">
-        <hr>
-        <h3>What comes to your mind?</h3>
-        <form id="compose-post-form">
-            <div class="primary-buttons">
-                <input type="submit" class="btn btn-primary"/>
-            </div>
-            <div class="form-message">
-                <textarea id="post-message" placeholder="write here"></textarea>
-            </div>
-            <div class="form-buttons">
-                <button id="import-images"><i class="fas fa-camera"></i></button>    
-            </div>
-        </form>
+        <div id="compose-post">
+            <h3>What comes to your mind?</h3>
+            <form id="compose-post-form">
+                <div class="primary-buttons">
+                    <input type="submit" class="btn btn-primary"/>
+                </div>
+                <div class="form-message">
+                    <textarea id="post-message" placeholder="write here"></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button id="import-images"><i class="fas fa-camera"></i></button>    
+                </div>
+            </form>
+        </div>
     </div>
 
     <div id="compose-repost">
     </div>
-
+</div>
 {% endblock %}
 
 {% block script %}

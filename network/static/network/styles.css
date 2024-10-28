@@ -1,3 +1,17 @@
 a {
     cursor: pointer;
 }
+
+#air-btns {
+    margin-left: auto; /* Pushes the #air-btns to the far right */
+}
+
+.d-flex.justify-content-center {
+    flex-grow: 1; /* Allows it to center within the available space */
+}
+
+#feed {
+    margin-top: 10px;
+    scroll-margin-bottom: 10px;
+    background-color: rgb(248, 248, 248);
+}

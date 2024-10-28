@@ -8,13 +8,13 @@ class User(AbstractUser):
 class Profile(models.Model):
     SEX_CHOICES = [('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='rel_profile')
     username = models.CharField(max_length=36, unique=True)
     bio = models.TextField(max_length=280)
     profile_pic = models.ImageField(upload_to='profile_pics/')
     birth_date = models.DateField()
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
-    following = models.ManyToManyField("self", symmetrical=False, related_name='followers')
+    following = models.ManyToManyField("self", symmetrical=False, related_name='followers', blank=True)
 
     def serialize(self):
         return {
@@ -24,9 +24,10 @@ class Profile(models.Model):
             "profile_pic": self.profile_pic.url,
             "birth_date": self.birth_date,
             "sex": self.get_sex_display(),  # Display the human-readable version of 'sex'
-            "followers": self.followers.count(),
-            "following": self.following.count()
+            "followers": self.followers.count() if self.followers.exists() else 0,
+            "following": self.following.count() if self.following.exists() else 0
         }
+
 
 
 class Post(models.Model):

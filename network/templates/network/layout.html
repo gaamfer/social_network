@@ -12,7 +12,9 @@
         {% endblock %}
         <link href="{% static 'network/assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="{% static 'network/headers.css' %}" rel="stylesheet">
+      {% block style %}
+        <link href="{% static 'network/headers.css' %}" rel="stylesheet">
+      {% endblock %}
     </head>
     <body>
         <!-- THEME-->
@@ -72,52 +74,77 @@
         <main>
           <header class="p-3 mb-3 border-bottom">
             <div class="container">
-              <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                
-                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                  {% if user.is_authenticated %}
-                    <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Inventory</a></li>
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Customers</a></li>
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Products</a></li>
-                  {% else %}
-                    <li class="nav-item">
-                      <a style="text-decoration: underline" class="nav-link" href="{% url 'network:login' %}">Log In</a>
-                    </li>
-                    <li class="nav-item">
-                      <a style="text-decoration: underline" class="nav-link" href="{% url 'network:register' %}">Register</a>
-                    </li>
-                    {% endif %}
-                  </ul>
-                  {% if user.is_authenticated %}
-                  <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-                    <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
-                  </form>
-          
-                  <div class="dropdown text-end">
-                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                      <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                    </a>
-                    <ul class="dropdown-menu text-small">
-                      <li><a class="dropdown-item" href="#">New project...</a></li>
-                      <li><a class="dropdown-item" href="#">Settings</a></li>
-                      <li><a class="dropdown-item" href="#">Profile</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="{% url 'network:logout' %}">Sign out</a></li>
-                    </ul>
-                    {% endif %}
+
+              {% if user.is_authenticated %}
+                <div class="d-flex flex-wrap align-items-center justify-content-between">
+                  
+                  <div id="left-interact" class="d-flex align-items-center">
+                    <div id="search-area" style="display: none;">
+                      <form role="search" class="d-flex align-items-center ms-2">  
+                        <button id="search-area-left" class="btn p-10 link-body-emphasis" type="button"><i class="fas fa-arrow-left"></i></button>
+                        <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+                      </form>
+                    </div>
+                    <div>
+                      <button id="search-area-button" class="btn p-10 link-body-emphasis"><i class="fas fa-search"></i></button>
+                    </div>
                   </div>
+
+                  <div id="center-interact" class="d-flex justify-content-center flex-grow-1" style="margin-left: 40%;">
+                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                        <li><a href="{% url 'network:index' %}" class="nav-link px-2 link-body-emphasis"><img src="{% static 'network/assets/icones/Gaamblack.svg' %}" width="100" height="30"/></a></li>
+                    </ul>
+                  </div>
+
+                  <div id="right-interact" class="d-flex align-items-center">
+                    <ul id="myfollow" class="nav col-12 col-lg-auto me-lg-3 mb-2 justify-content-center mb-md-0">
+                      <li>
+                          <a href="#" class="nav-link px-2 link-body-emphasis">
+                              <span style="color: #FF5733; font-weight: bold;">{{ user.rel_profile.followers.count }}</span> Following
+                          </a>
+                      </li>
+                      <li>
+                          <a href="#" class="nav-link px-2 link-body-emphasis">
+                              <span style="color: #3399FF; font-weight: bold;">{{ user.rel_profile.following.count }}</span> Followers
+                          </a>
+                      </li>
+                    </ul>
+                  
+                      
+                    <div id="drop" class="dropdown text-end ms-3">
+                      <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                      </a>
+                      <ul class="dropdown-menu text-small">
+                        <li>
+                          <form action="{% url 'network:profile' user.username %}" method="post" style="display: inline;">
+                              {% csrf_token %}
+                              <button type="submit" class="dropdown-item fw-bold fs-6" style="border: none; background: none; text-align: left; width: 100%;">
+                                  {{ user.first_name }} {{ user.last_name }}
+                                  <p class="text-muted" style="display: block; font-size: small;">@{{ user.username }}</p>
+                              </button>
+                          </form>
+                        </li>
+                        <li><a class="dropdown-item" href="#">Saved Items</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'network:logout' %}">Sign out</a></li>
+                      </ul>
+                    </div>
+                  </div>
+
                 </div>
-              </div>
-            </header>
+              {% endif %}
+            </div>
+          </header>
+          <div class="body">
+              {% block body %}
+              {% endblock %}
+          </div>
 
         </main>
         <script src="{% static 'network/assets/dist/js/bootstrap.bundle.min.js' %}"></script>
 
 
-        <div class="body">
-            {% block body %}
-            {% endblock %}
-        </div>
     </body>
 </html>

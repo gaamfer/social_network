@@ -22,20 +22,16 @@ function Feed_loader(view){
     // Clear previous posts
     document.querySelector('#homepage').innerHTML = '';
 
-    // add line to separate
-    document.querySelector('#homepage').innerHTML = `<hr>`;
-
-
     // Load the appropriate feed based on the view
     if (view === 'ForYou') {
-        document.querySelector('#homepage').innerHTML += '<p>Loading For You feed...</p>';
+        document.querySelector('#homepage').innerHTML = '<p>Loading For You feed...</p>';
     } else if (view === 'Following') {
-        document.querySelector('#homepage').innerHTML += '<p>Loading Following feed...</p>';
+        document.querySelector('#homepage').innerHTML = '<p>Loading Following feed...</p>';
     }
 }
 
 
-// THIs s just for the Interface behaviour
+// This s just for the Interface behaviour
 function Compose_post(){
     // Just adjust the behaviour of the form showing up 
 

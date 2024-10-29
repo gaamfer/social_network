@@ -32,6 +32,10 @@ def generate_post(request):
     
     ...
 
+def profile_regis(request):
+    ...
+
+
 def post(request, post_id):
     ...
 

@@ -118,7 +118,7 @@
                       </a>
                       <ul class="dropdown-menu text-small">
                         <li>
-                          <form action="{% url 'network:profile' user.username %}" method="post" style="display: inline;">
+                          <form action="{% url 'network:profile' %}" method="post" style="display: inline;">
                               {% csrf_token %}
                               <button type="submit" class="dropdown-item fw-bold fs-6" style="border: none; background: none; text-align: left; width: 100%;">
                                   {{ user.first_name }} {{ user.last_name }}

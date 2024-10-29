@@ -1,0 +1,50 @@
+{% extends "network/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h2>Profile</h2>
+    
+    <div id="reg_profile">
+        <form action="{% url 'network:profile_regis' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Bio Field -->
+            <div class="form-group" id="bio">
+                {{ form.bio.label_tag }}
+                {{ form.bio }}
+            </div>
+            
+            <!-- Profile Picture Field -->
+            <div class="form-group" id="profile_pic">
+                <label for="profile_pic">Upload Profile Picture</label>
+                {{ form.profile_pic }}
+            </div>
+            
+            <!-- Birth Date Field -->
+            <div class="form-group" id="birth_date">
+                <label for="birth_date">Birth Date</label>
+                {{ form.birth_date }}
+            </div>
+            
+            <!-- Sex Field -->
+            <div class="form-group" id="sex">
+                <label for="sex">Choose your gender</label>
+                {{ form.sex }}
+            </div>
+    
+            <!-- Submit Button -->
+            <input class="btn btn-primary" type="submit" value="Save">
+        </form>
+    </div>
+    
+    
+</div>
+
+{% block script %}
+<script src="{% static 'network/profile_editor.js' %}"></script>
+{% endblock %}
+
+
+{% endblock %}

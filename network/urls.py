@@ -15,7 +15,7 @@ urlpatterns = [
     # API Routes
     path("generate_post", views.generate_post, name="generate_post" ),
     path("post/<int:post_id>", views.post, name="post"),
-    path("profile/<str:username>", views.profile, name="profile")
+    path("profile", views.profile, name="profile")
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

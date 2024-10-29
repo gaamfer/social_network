@@ -27,7 +27,9 @@ class Profile(models.Model):
             "followers": self.followers.count() if self.followers.exists() else 0,
             "following": self.following.count() if self.following.exists() else 0
         }
-
+    
+    def __str__(self):
+        return f'{self.username} > belong to: {self.user}'
 
 
 class Post(models.Model):

@@ -1,8 +1,10 @@
 from django import forms
 from network.models import Profile
 
-class ProfileForm(forms.Form):
+class ProfileForm(forms.ModelForm):
+    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type':'date'}), required=True)
+
     class Meta:
         model = Profile
-        exclude = ["user", "username", "following"]
+        fields = ['bio', 'profile_pic', 'birth_date', 'sex']
         

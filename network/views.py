@@ -6,8 +6,9 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from network.extra.extra import *
 
-from .models import User, Profile
+from .models import User, Profile, Post
 
 from network.forms import ProfileForm
 
@@ -27,9 +28,17 @@ def generate_post(request):
     
     # Get content of the post
     data = json.loads(request.body)
-    
     message = data.get("message", "")
-    
+    tags = rip_tags(message)
+    ping_users = rip_pings(message)
+
+    post = Post(
+        creator = request.user.rel_profile, 
+        message = message
+    )
+    post.save()
+    for ping_user in ping_users:
+        post.ping_user.add()
     
     ...
 

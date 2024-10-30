@@ -33,33 +33,31 @@ class Profile(models.Model):
 
 
 class Post(models.Model):
-    creator = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="post")#the user who creates the post
-    post_nb = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="post_id")# the id of the post related to the user, aside from the id
-    message = models.TextField(max_length=280) # a message with 280 characters
-    tag = models.ManyToManyField("Tag", related_name='posts')# the hastags
-    ping_users = models.ManyToManyField("Profile", related_name='Pinged_posts')#ping @people , users 
-    timestsamp = models.DateTimeField(auto_now_add=True)# the date and time it was posted once button clicked
-    is_reported = models.ManyToManyField("Profile", related_name='reports')
-    is_deleted = models.ForeignKey("Profile", on_delete=models.CASCADE ,related_name='deleted_post')
-    is_archived = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name='archived_post')
-    is_edited = models.ManyToManyField("Edit", related_name='edited_post')
-    repost_source = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, related_name='reposts')
-    
+    creator = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="posts")  # creator of the post
+    post_nb = models.IntegerField(unique=True)  # unique post number for user, alternative to id
+    message = models.TextField(max_length=280)  # post message, max 280 chars
+    ping_users = models.ManyToManyField("Profile", related_name='pinged_posts')  # pinged users in post
+    timestamp = models.DateTimeField(auto_now_add=True)  # timestamp at post creation
+    is_del = models.BooleanField(default=False)  # deleted status
+    is_arch = models.BooleanField(default=False)  # archived status
+    is_reported = models.ManyToManyField("Profile", related_name='reports', blank=True)  # users who reported post
+    is_edited = models.ManyToManyField("Edit", related_name='edited_posts', blank=True)  # edits related to post
+    repost_source = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, related_name='reposts')  # source of repost
+
     def is_repost(self):
         return self.repost_source is not None
 
     def serialize(self):
         return {
             "id": self.id,
-            "post_number": self.post_nb.id,
+            "post_number": self.post_nb,
             "creator": self.creator.username,
             "message": self.message,
-            "tags": [tag.name for tag in self.tag.all()],
             "pinged_users": [user.username for user in self.ping_users.all()],
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
             "is_reported": [user.username for user in self.is_reported.all()],
-            "is_deleted": self.is_deleted.username if self.is_deleted else None,
-            "is_archived": self.is_archived.username if self.is_archived else None,
+            "is_del": self.is_deleted,
+            "is_arch": self.is_archived,
             "is_edited": [edit.id for edit in self.is_edited.all()],
             "repost_source": self.repost_source.id if self.repost_source else None,
             "is_repost": self.is_repost()
@@ -81,8 +79,20 @@ class Edit(models.Model):
 
 class Tag(models.Model):
     Author = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="tags")
+    reference = models.IntegerField(default=0)
     name = models.CharField(max_length=64, unique=True) 
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    # a method so that everytime a tag is created,  add one to  reference or if exists add one to current reference
+    def add_reference(self):
+        if self.reference:
+            self.reference += 1
+        else:
+            self.reference = 1
+        self.save()
+
+
+
 
 class PostImages(models.Model):
     post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="images")

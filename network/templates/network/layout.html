@@ -4,18 +4,19 @@
 <html lang="en">
     <head>
         <script src="{% static 'network/assets/js/color-modes.js' %}"></script>
+        
         <title>{% block title %}Social Network{% endblock %}</title>
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        {% block script %}
         <script src="{% static 'network/search.js' %}"></script>
+        {% block script %}
         {% endblock %}
         <link href="{% static 'network/assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <!-- Custom styles for this template -->
-      {% block style %}
-        <link href="{% static 'network/styles.css' %}" rel="stylesheet">
         <link href="{% static 'network/headers.css' %}" rel="stylesheet">
-      {% endblock %}
+        <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        {% block style %}
+        {% endblock %}
     </head>
     <body>
         <!-- THEME-->
@@ -145,7 +146,6 @@
 
         </main>
         <script src="{% static 'network/assets/dist/js/bootstrap.bundle.min.js' %}"></script>
-
 
     </body>
 </html>

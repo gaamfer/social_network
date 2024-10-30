@@ -1,11 +1,12 @@
+import generate_post from "./network/static/network/api.js";
+
 document.addEventListener('DOMContentLoaded', function(){
     
     // Use buttons to switch between Following and for you
 
     document.querySelector('#ForYou').addEventListener('click', () => Feed_loader('ForYou'));
     document.querySelector('#Following').addEventListener('click', () => Feed_loader('Following'));
-    document.querySelector('#compose-btn').addEventListener('click', () => Compose_post());
-    document.querySelector('#Following').addEventListener('click', () => Followers());
+    document.querySelector('#compose-btn').addEventListener('click', Compose_post_view);
 
     Feed_loader('Following');
 
@@ -28,27 +29,19 @@ function Feed_loader(view){
     } else if (view === 'Following') {
         document.querySelector('#homepage').innerHTML = '<p>Loading Following feed...</p>';
     }
-}
+};
 
 
 // This s just for the Interface behaviour
-function Compose_post(){
+function Compose_post_view(){
     // Just adjust the behaviour of the form showing up 
-
     document.querySelector('#homepage').style.display='none';
     document.querySelector('#compose-post').style.display='block';
     document.querySelector('#compose-btn').style.display='none';
 
     
-}
-
-function Search(){
+    document.querySelector('#compose-post-form').addEventListener('submit', generate_post);
     
-    // Hide search-area-button
-    document.querySelector('#search-area-button').style.display = 'none';
-    document.querySelector('#search-area').style.display = 'block';
-
-    // When press the left arrow go back
-    document.querySelector('#search-area-left').addEventListener('click', () => HideSearchArea());
-
 };
+
+

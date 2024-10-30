@@ -1,6 +1,10 @@
 {% extends "network/layout.html" %}
 {% load static %}
 
+{% block style %}
+<link rel="stylesheet" href="{% static 'network/assets/dist/css/post.css' %}">
+{% endblock %}
+
 {% block title %}Feed{% endblock%}
 
 {% block body %}
@@ -22,17 +26,22 @@
         </div>
 
 
-        <div id="compose-post">
+        <div id="compose-post" class="post-container">
             <h3>What comes to your mind?</h3>
             <form id="compose-post-form">
-                <div class="primary-buttons">
-                    <input type="submit" class="btn btn-primary"/>
-                </div>
                 <div class="form-message">
-                    <textarea id="post-message" placeholder="write here"></textarea>
+                    <textarea id="post-message" placeholder="Write here"></textarea>
                 </div>
                 <div class="form-buttons">
-                    <button id="import-images"><i class="fas fa-camera"></i></button>    
+                    <label for="upload-images" class="btn btn-outline-primary">
+                        <i class="fas fa-camera"></i> Upload Images
+                    </label>
+                    <input type="file" id="upload-images" name="images" multiple accept="image/*">
+                    <div id="postPreview" class="post-preview"></div>
+                </div>
+                
+                <div class="primary-buttons">
+                    <input  id="submitPost" value="Postar" type="submit" class="btn btn-primary"/>
                 </div>
             </form>
         </div>
@@ -44,6 +53,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'network/search.js' %}"></script>
     <script src="{% static 'network/main.js' %}"></script>
 {% endblock %}

@@ -20,58 +20,56 @@ def index(request):
     else:
         return HttpResponseRedirect(reverse("network:login"))
 
+
 @csrf_exempt
 @login_required
 def generate_post(request):
-    #Composing a new post in the social media must be with a POST request
     if request.method != "POST":
-        return JsonResponse({"error:" "POST request required."}, status=400)
-    
+        return JsonResponse({"error": "POST request required."}, status=400)
+
     try:
-        # Get content of the post
-        message = request.POST.get("message", "") # message model from form
-        images = request.FILES.getlist("images") # get the list of uploaded images
+        message = request.POST.get("message", "")
+        images = request.FILES.getlist("images")
 
-        tags = rip_tags(message) #pull the tags from the post message
-        users = rip_pings(message) # pull the pinged users from the post messsage 
-        
-        # Handle cerating Tag objects
-        if tags is not None:
-            for tag in tags: 
-                _tag = Tag(
-                    Author = request.user.rel_profile,
-                    name = tag
-                )
-                _tag.save()
-                _tag.add_reference()
-                _tag.save()
+        tags = rip_tags(message)  # Extract tags from message
 
-        # Handle creating a Post Object 
-        post = Post(
-            creator = request.user.rel_profile, 
-            message = message
+        # Extract pinged users from message
+        pinged_usernames = rip_pings(message)
+        pinged_users = Profile.objects.filter(user__username__in=pinged_usernames)
+
+        # Create the post
+        post = Post.objects.create(
+            creator=request.user.rel_profile,
+            message=message
         )
-        # save it one time just to create the object and correspondant ID 
-        post.save() 
-        post.ping_users.set(users)
         post.save()
 
-        #Handle creating Images associated to the Post
+        # Set `ping_users` with Profile instances (not strings)
+        post.ping_users.set(pinged_users)
+        post.save()
+
+        # Associate tags with the post
+        if tags:
+            for tag_name in tags:
+                tag, created = Tag.objects.get_or_create(name=tag_name, Author=request.user.rel_profile)
+                if not created:
+                    tag.add_reference()  # Increase reference count if tag already exists
+                post.tags.add(tag)  # Link tag to post
+
+        # Handle saving images
         for i, image in enumerate(images):
-            _image = PostImages(
-                post = request.post.id,
-                image = image,
-                image_ref = i
+            PostImages.objects.create(
+                post=post,
+                image=image,
+                image_ref=i
             )
-            _image.save()
-        
+
         return JsonResponse({"message": "Post created successfully."}, status=201)
-    
+
     except ValidationError as e:
         return JsonResponse({"error": str(e)}, status=400)
     except Exception as e:
         return JsonResponse({"error": "An unexpected error occurred: " + str(e)}, status=500)
-        
 
 
 def profile_regis(request):

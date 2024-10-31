@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import UniqueConstraint
 
 
 class User(AbstractUser):
@@ -7,7 +8,6 @@ class User(AbstractUser):
 
 class Profile(models.Model):
     SEX_CHOICES = [('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='rel_profile')
     username = models.CharField(max_length=36, unique=True)
     bio = models.TextField(max_length=280)
@@ -29,20 +29,35 @@ class Profile(models.Model):
         }
     
     def __str__(self):
-        return f'{self.username} > belong to: {self.user}'
+        return f'{self.username}'
 
 
 class Post(models.Model):
-    creator = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="posts")  # creator of the post
-    post_nb = models.IntegerField(unique=True)  # unique post number for user, alternative to id
-    message = models.TextField(max_length=280)  # post message, max 280 chars
-    ping_users = models.ManyToManyField("Profile", related_name='pinged_posts')  # pinged users in post
-    timestamp = models.DateTimeField(auto_now_add=True)  # timestamp at post creation
-    is_del = models.BooleanField(default=False)  # deleted status
-    is_arch = models.BooleanField(default=False)  # archived status
-    is_reported = models.ManyToManyField("Profile", related_name='reports', blank=True)  # users who reported post
-    is_edited = models.ManyToManyField("Edit", related_name='edited_posts', blank=True)  # edits related to post
-    repost_source = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, related_name='reposts')  # source of repost
+    id = models.AutoField(primary_key=True)
+    creator = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="posts")
+    post_nb = models.IntegerField()  # unique post number for user, alternative to id
+    message = models.TextField(max_length=280)
+    ping_users = models.ManyToManyField("Profile", related_name='pinged_posts')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_del = models.BooleanField(default=False)
+    is_arch = models.BooleanField(default=False)
+    is_reported = models.ManyToManyField("Profile", related_name='reports', blank=True)
+    is_edited = models.ManyToManyField("Edit", related_name='edited_posts', blank=True)
+    repost_source = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, related_name='reposts')
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['creator', 'post_nb'], name='unique_post_nb_per_user')
+        ]
+
+    def save(self, *args, **kwargs):
+        # Only assign post_nb if it is not already set
+        if self.post_nb is None:
+            # Get the last post for this user
+            last_post = Post.objects.filter(creator=self.creator).order_by('post_nb').last()
+            # Set post_nb as one greater than the last post_nb, or 1 if no posts exist
+            self.post_nb = last_post.post_nb + 1 if last_post else 1
+        super().save(*args, **kwargs)
 
     def is_repost(self):
         return self.repost_source is not None
@@ -56,12 +71,17 @@ class Post(models.Model):
             "pinged_users": [user.username for user in self.ping_users.all()],
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
             "is_reported": [user.username for user in self.is_reported.all()],
-            "is_del": self.is_deleted,
-            "is_arch": self.is_archived,
+            "is_del": self.is_del,
+            "is_arch": self.is_arch,
             "is_edited": [edit.id for edit in self.is_edited.all()],
             "repost_source": self.repost_source.id if self.repost_source else None,
             "is_repost": self.is_repost()
         }
+
+    def __str__(self):
+        return f'{self.creator.user.username} post:{self.post_nb}'
+
+
 
 class SavedPost(models.Model):
     user = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="saved_post")#the user who saves the post
@@ -79,17 +99,19 @@ class Edit(models.Model):
 
 class Tag(models.Model):
     Author = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="tags")
+    posts = models.ManyToManyField("Post", related_name="tags")
     reference = models.IntegerField(default=0)
     name = models.CharField(max_length=64, unique=True) 
     timestamp = models.DateTimeField(auto_now_add=True)
 
     # a method so that everytime a tag is created,  add one to  reference or if exists add one to current reference
     def add_reference(self):
-        if self.reference:
-            self.reference += 1
-        else:
-            self.reference = 1
+        self.reference += 1
         self.save()
+    
+    def __str__(self):
+        return f'{self.name} ({self.reference})'
+    
 
 
 

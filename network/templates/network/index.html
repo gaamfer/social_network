@@ -28,7 +28,8 @@
 
         <div id="compose-post" class="post-container">
             <h3>What comes to your mind?</h3>
-            <form id="compose-post-form">
+            <form id="compose-post-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
                 <div class="form-message">
                     <textarea id="post-message" placeholder="Write here..."></textarea>
                 </div>

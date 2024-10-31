@@ -1,31 +1,40 @@
-export function generate_post(event){
-    event.preventDefault();
-
+export async function generate_post() {
     const message = document.querySelector('#post-message').value;
-    const upload_img = document.querySelector('#upload_images').files;
-    
-    const formData = new FormData();
+    const uploadImg = document.querySelector('#upload-images').files;
 
-    formData.append('message', message);
-    // Append each image individually 
-    for (let i=0 ; i < upload_img.length; i++) {
-        formData.append('images', upload_img[i]);
+    // Validate form data (optional: customize validation as needed)
+    if (!message.trim() && uploadImg.length === 0) {
+        alert("Please enter a message or upload at least one image.");
+        return;
     }
 
-    fetch('/generate_post', {
-        method:'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.error){
-            // Make an alert with the error
+    const formData = new FormData();
+    formData.append('message', message);
+
+    // Append each image individually
+    for (let i = 0; i < uploadImg.length; i++) {
+        formData.append('images', uploadImg[i]);
+    }
+
+    try {
+        const response = await fetch('/generate_post', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+
+        if (result.error) {
             alert(result.error);
-            console.log(result);
+            console.error("Error from server:", result);
             return;
         }
-        // Make a alert with the response
+
         alert(result.message);
-        console.log(result);
-    });
+        console.log("Post created successfully:", result);
+
+    } catch (error) {
+        console.error('Network or server error:', error);
+        alert("An error occurred while creating the post. Please try again.");
+    }
 }

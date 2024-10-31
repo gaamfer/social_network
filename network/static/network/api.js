@@ -1,15 +1,20 @@
-function generate_post(event){
+export function generate_post(event){
     event.preventDefault();
 
     const message = document.querySelector('#post-message').value;
-    const upload_img = document.querySelector('#upload_images').value;
+    const upload_img = document.querySelector('#upload_images').files;
+    
+    const formData = new FormData();
+
+    formData.append('message', message);
+    // Append each image individually 
+    for (let i=0 ; i < upload_img.length; i++) {
+        formData.append('images', upload_img[i]);
+    }
 
     fetch('/generate_post', {
         method:'POST',
-        body: JSON.stringify({
-            message:message,
-            images: upload_img
-        })
+        body: formData
     })
     .then(response => response.json())
     .then(result => {

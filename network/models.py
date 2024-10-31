@@ -98,6 +98,9 @@ class PostImages(models.Model):
     post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to='images/')
     image_ref = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f'pic_{self.post}_{self.image_ref}'
     
 
 

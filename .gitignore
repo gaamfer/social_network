@@ -4,3 +4,4 @@ venv/
 network/__pycache__/*
 social_network/__pycache__/*
 network/migrations/*
+network/extra/__pycache__

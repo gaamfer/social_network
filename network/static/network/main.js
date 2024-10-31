@@ -1,4 +1,4 @@
-import generate_post from "./network/static/network/api.js";
+import { generate_post } from './api.js';
 
 document.addEventListener('DOMContentLoaded', function(){
     
@@ -33,14 +33,28 @@ function Feed_loader(view){
 
 
 // This s just for the Interface behaviour
-function Compose_post_view(){
+function Compose_post_view(event){
+    event.preventDefault();
     // Just adjust the behaviour of the form showing up 
     document.querySelector('#homepage').style.display='none';
     document.querySelector('#compose-post').style.display='block';
     document.querySelector('#compose-btn').style.display='none';
-
     
-    document.querySelector('#compose-post-form').addEventListener('submit', generate_post);
+    // Clear the form fields
+    const form = document.querySelector('#compose-post-form');
+    form.reset();
+
+    // Clear the file input and preview container
+    const upload_img = document.querySelector('#upload-images');
+    upload_img.value = '';
+    const postPreview = document.querySelector('#postPreview');
+    postPreview.innerHTML = '';
+    
+    document.querySelector('#compose-post-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        await generate_post();
+        Feed_loader('Following');
+    });
     
 };
 

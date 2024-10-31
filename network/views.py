@@ -7,8 +7,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from network.extra.extra import *
+from django.core.exceptions import ValidationError
 
-from .models import User, Profile, Post
+from .models import User, Profile, Post, Tag, PostImages
 
 from network.forms import ProfileForm
 
@@ -26,21 +27,52 @@ def generate_post(request):
     if request.method != "POST":
         return JsonResponse({"error:" "POST request required."}, status=400)
     
-    # Get content of the post
-    data = json.loads(request.body)
-    message = data.get("message", "")
-    tags = rip_tags(message)
-    ping_users = rip_pings(message)
+    try:
+        # Get content of the post
+        message = request.POST.get("message", "") # message model from form
+        images = request.FILES.getlist("images") # get the list of uploaded images
 
-    post = Post(
-        creator = request.user.rel_profile, 
-        message = message
-    )
-    post.save()
-    for ping_user in ping_users:
-        post.ping_user.add()
+        tags = rip_tags(message) #pull the tags from the post message
+        users = rip_pings(message) # pull the pinged users from the post messsage 
+        
+        # Handle cerating Tag objects
+        if tags is not None:
+            for tag in tags: 
+                _tag = Tag(
+                    Author = request.user.rel_profile,
+                    name = tag
+                )
+                _tag.save()
+                _tag.add_reference()
+                _tag.save()
+
+        # Handle creating a Post Object 
+        post = Post(
+            creator = request.user.rel_profile, 
+            message = message
+        )
+        # save it one time just to create the object and correspondant ID 
+        post.save() 
+        post.ping_users.set(users)
+        post.save()
+
+        #Handle creating Images associated to the Post
+        for i, image in enumerate(images):
+            _image = PostImages(
+                post = request.post.id,
+                image = image,
+                image_ref = i
+            )
+            _image.save()
+        
+        return JsonResponse({"message": "Post created successfully."}, status=201)
     
-    ...
+    except ValidationError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": "An unexpected error occurred: " + str(e)}, status=500)
+        
+
 
 def profile_regis(request):
     if request.method == 'POST':

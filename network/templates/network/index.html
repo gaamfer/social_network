@@ -30,7 +30,7 @@
             <h3>What comes to your mind?</h3>
             <form id="compose-post-form">
                 <div class="form-message">
-                    <textarea id="post-message" placeholder="Write here"></textarea>
+                    <textarea id="post-message" placeholder="Write here..."></textarea>
                 </div>
                 <div class="form-buttons">
                     <label for="upload-images" class="btn btn-outline-primary">
@@ -53,5 +53,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'network/main.js' %}"></script>
+    <script type="module"  src="{% static 'network/main.js' %}"></script>
 {% endblock %}
